@@ -8,7 +8,7 @@ fi
 source .env
 
 # Varibales
-export PUBLIC_IP=$(curl -s ifconfig.me)
+export PUBLIC_IP=$(curl -4 -s ifconfig.me)
 
 # SCRIPT SETUP
 export PROJECT_PATH="$(dirname $(realpath "$0"))"
