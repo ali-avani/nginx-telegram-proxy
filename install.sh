@@ -107,7 +107,7 @@ install_ssl() {
 install_telegram_nginx() {
     NGINX_CONFIG_FILENAME="$TELEGRAM_DOMAIN.conf"
     echo_run "gcfc telegram-proxy/nginx.conf > /etc/nginx/sites-available/$NGINX_CONFIG_FILENAME"
-    ln_nginx $NGINX_CONFIG_FILENAME
+    ln_nginx $TELEGRAM_DOMAIN
     echo_run "systemctl restart nginx"
     echo "URL: https://$TELEGRAM_DOMAIN"
     echo "When you open the URL, you should redirect to the Telegram bots documentation page."
