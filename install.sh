@@ -111,7 +111,7 @@ install_telegram_nginx() {
     certbot_expand_nginx $TELEGRAM_DOMAIN
     echo_run "systemctl restart nginx"
     echo "URL: https://$TELEGRAM_DOMAIN"
-    echo "When you open the URL, you should redirect to the Telegram bots documentation page."
+    echo "When you open the URL, you should see a basic authentication prompt."
 }
 
 create_telegram_proxy_user() {
