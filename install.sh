@@ -99,7 +99,6 @@ install_ssl() {
     echo_run "read"
     echo_run "systemctl stop nginx.service"
     echo_run "certbot certonly -d $TELEGRAM_DOMAIN --email $CERTBOT_EMAIL --standalone --agree-tos --noninteractive"
-    certbot_expand_nginx $TELEGRAM_DOMAIN
     echo_run "killall -9 nginx"
     echo_run "systemctl restart nginx"
 }
@@ -108,6 +107,7 @@ install_telegram_nginx() {
     NGINX_CONFIG_FILENAME="$TELEGRAM_DOMAIN.conf"
     echo_run "gcfc telegram-proxy/nginx.conf > /etc/nginx/sites-available/$NGINX_CONFIG_FILENAME"
     ln_nginx $TELEGRAM_DOMAIN
+    certbot_expand_nginx $TELEGRAM_DOMAIN
     echo_run "systemctl restart nginx"
     echo "URL: https://$TELEGRAM_DOMAIN"
     echo "When you open the URL, you should redirect to the Telegram bots documentation page."
