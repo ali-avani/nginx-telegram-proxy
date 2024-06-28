@@ -106,6 +106,7 @@ install_ssl() {
 install_telegram_nginx() {
     NGINX_CONFIG_FILENAME="$TELEGRAM_DOMAIN.conf"
     echo_run "gcfc telegram-proxy/nginx.conf > /etc/nginx/sites-available/$NGINX_CONFIG_FILENAME"
+    echo_run "touch $TELEGRAM_AUTH_FILE"
     ln_nginx $TELEGRAM_DOMAIN
     certbot_expand_nginx $TELEGRAM_DOMAIN
     echo_run "systemctl restart nginx"
