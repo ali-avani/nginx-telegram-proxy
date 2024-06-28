@@ -100,6 +100,7 @@ install_ssl() {
     echo_run "systemctl stop nginx.service"
     echo_run "certbot certonly -d $TELEGRAM_DOMAIN --email $CERTBOT_EMAIL --standalone --agree-tos --noninteractive"
     certbot_expand_nginx $TELEGRAM_DOMAIN
+    echo_run "killall -9 nginx"
     echo_run "systemctl restart nginx"
 }
 
