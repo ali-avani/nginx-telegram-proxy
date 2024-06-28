@@ -60,28 +60,9 @@ function certbot_domains_fix() {
     echo -n $(certbot certificates --cert-name $DOMAIN 2>/dev/null | grep Domains | cut -d':' -f2 | xargs | tr -s '[:blank:]' ',')
 }
 
-function certbot_expand() {
-    OLD_DOMAINS=$(certbot_domains_fix)
-    echo_run "certbot certonly --cert-name $DOMAIN -d $OLD_DOMAINS,$@ --email $CERTBOT_EMAIL --expand --standalone --agree-tos --noninteractive"
-}
-
 function certbot_expand_nginx() {
     OLD_DOMAINS=$(certbot_domains_fix)
     echo_run "certbot --nginx --cert-name $DOMAIN -d $OLD_DOMAINS,$@ --email $CERTBOT_EMAIL --expand --agree-tos --noninteractive"
-}
-
-function ln_ssl() {
-    echo_run "ln -fs /etc/letsencrypt/live/$DOMAIN/{fullchain.pem,privkey.pem} ."
-}
-
-function dcd() {
-    mkdir -p ~/docker/$1/
-    cd ~/docker/$1/
-}
-
-function cpc() {
-    echo "Config $1 copied."
-    cp $PROJECT_CONFIGS/$1 .
 }
 
 function get_subdomains() {
@@ -104,23 +85,22 @@ server_initial_setup() {
 }
 
 install_ssl() {
-    echo_run "apt install certbot python3-certbot-nginx -y"
-    echo_run "certbot certonly -d $DOMAIN --email $CERTBOT_EMAIL --standalone --agree-tos --noninteractive"
-    certbot_expand_nginx $DOMAIN
-    echo_run "systemctl restart nginx"
-}
-
-install_telegram_nginx() {
     echo -e "Add the following DNS record to $(echo -n $DOMAIN | rev | cut -d"." -f1,2 | rev) DNS settings:"
     echo -e "\tType: A"
     echo -e "\tName: $(get_subdomains $TELEGRAM_DOMAIN)"
     echo -e "\tValue: $PUBLIC_IP"
     echo "Press enter to continue"
     echo_run "read"
+    echo_run "certbot certonly -d $TELEGRAM_DOMAIN --email $CERTBOT_EMAIL --standalone --agree-tos --noninteractive"
+    certbot_expand_nginx $TELEGRAM_DOMAIN
+    echo_run "systemctl restart nginx"
+}
+
+install_telegram_nginx() {
     NGINX_CONFIG_FILENAME="$TELEGRAM_DOMAIN.conf"
     echo_run "gcfc telegram-proxy/nginx.conf > /etc/nginx/sites-available/$NGINX_CONFIG_FILENAME"
     ln_nginx $NGINX_CONFIG_FILENAME
-    certbot_expand_nginx $TELEGRAM_DOMAIN
+    echo_run "systemctl restart nginx"
     echo "URL: https://$TELEGRAM_DOMAIN"
     echo "When you open the URL, you should redirect to the Telegram bots documentation page."
 }
