@@ -62,7 +62,13 @@ function certbot_domains_fix() {
 
 function certbot_expand_nginx() {
     OLD_DOMAINS=$(certbot_domains_fix)
-    echo_run "certbot --nginx --cert-name $DOMAIN -d $OLD_DOMAINS,$@ --email $CERTBOT_EMAIL --expand --agree-tos --noninteractive"
+    DOMAINS=""
+    if [ ! -z $OLD_DOMAINS ]; then
+        DOMAINS="$OLD_DOMAINS,$@"
+    else
+        DOMAINS="$@"
+    fi
+    echo_run "certbot --nginx --cert-name $DOMAIN -d $DOMAINS --email $CERTBOT_EMAIL --expand --agree-tos --noninteractive"
 }
 
 function get_subdomains() {
@@ -91,6 +97,7 @@ install_ssl() {
     echo -e "\tValue: $PUBLIC_IP"
     echo "Press enter to continue"
     echo_run "read"
+    echo_run "systemctl stop nginx.service"
     echo_run "certbot certonly -d $TELEGRAM_DOMAIN --email $CERTBOT_EMAIL --standalone --agree-tos --noninteractive"
     certbot_expand_nginx $TELEGRAM_DOMAIN
     echo_run "systemctl restart nginx"
