@@ -117,7 +117,7 @@ install_telegram_nginx() {
 create_telegram_proxy_user() {
     read -p "Enter username: " USERNAME
     read -p "Enter password: " PASSWORD
-    echo_run "echo "$USERNAME:$(openssl passwd -6 $PASSWORD)" >> $TELEGRAM_AUTH_FILE"
+    echo_run "echo '$USERNAME:$(openssl passwd -6 $PASSWORD)' >> $TELEGRAM_AUTH_FILE"
 }
 
 ACTIONS=(
